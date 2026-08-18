@@ -11,7 +11,7 @@ def read_root():
     return {
         "mensaje": "¡Hola desde mi API DevOps!",
         "autor": "Jhon Julca",
-        "estado": "funcionando correctamente"
+        "estado": "funcionando correctamente - deploy automatico"
     }
 
 @app.get("/health")
