@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(
     title="API DevOps",
@@ -27,3 +28,6 @@ tasks = [
 @app.get("/tasks")
 def get_tasks():
     return {"tasks": tasks, "total": len(tasks)}
+
+# Metricas Prometheus para monitoreo (Fase 4)
+Instrumentator().instrument(app).expose(app)
