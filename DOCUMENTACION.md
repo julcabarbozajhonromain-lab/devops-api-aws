@@ -38,10 +38,91 @@ Implementar un pipeline CI/CD completo para una API REST en AWS.
 - Flujo: push → build → ECR → SSH → restart del contenedor
 - Verificado: cambio visible en producción en ~2 minutos
 
-## Lecciones aprendidas
-- El plan gratuito de AWS limita servicios → evaluar alternativas (EC2)
-- Credenciales nunca en el código: usar IAM + GitHub Secrets + rotación
-- Control de costos: terminar instancias y configurar presupuestos
+### Fase 10: DevSecOps con Trivy (gate de seguridad)
+- Trivy integrado en CI (fs) y CD (imagen) con aquasecurity/trivy-action
+- El gate BLOQUEÓ un deploy con 14 vulnerabilidades HIGH
+  (util-linux, starlette, wheel, jaraco.context)
+- Remediación: apt-get upgrade en imagen base, dependencias sin pin,
+  upgrade de setuptools/wheel en el builder
+- Aceptación de riesgo documentada en .trivyignore (fechada y justificada)
+- Política por severidad: CRITICAL bloquea; HIGH se gestiona con riesgo aceptado
+- Resultado: pipeline verde con deploy automático a EC2
 
-## Resultado final
-Pipeline CI/CD de extremo a extremo, 100% automático.
+## 💡 Lecciones Aprendidas
+
+### Técnicas
+1. **Multi-stage builds** reducen significativamente el tamaño de imagen y mejoran seguridad
+2. **Shift-left security:** detectar vulnerabilidades en CI/CD antes de producción
+3. **Mínimo privilegio:** IAM con políticas específicas, nunca admin total
+4. **Aceptación de riesgo:** documentar decisiones de seguridad es tan importante como la tecnología
+5. **Infrastructure as Code:** próximo paso es migrar a Terraform para reproducibilidad
+
+### Operativas
+1. **Plan gratuito de AWS** limita servicios (App Runner no disponible) → evaluar alternativas
+2. **Control de costos:** terminar instancias cuando no se usan (~$0.01/hora en t3.micro)
+3. **Credenciales:** nunca en el código, siempre en secrets o variables de entorno
+4. **Rotación de claves:** buena práctica tras cualquier exposición accidental
+5. **Documentación:** README + DOCUMENTACION.md hacen el proyecto profesional y mantenible
+
+### Profesionales
+1. **Pipeline CI/CD real** vale más que 10 proyectos teóricos
+2. **Troubleshooting:** cada error es una oportunidad de aprendizaje documentable
+3. **Comunicación técnica:** saber explicar decisiones (ej. por qué EC2 en vez de App Runner)
+4. **Iteración:** evolucionar un proyecto es más valioso que hacer muchos proyectos básicos
+
+## 🛠️ Stack Tecnológico
+
+### Desarrollo
+- **Lenguaje:** Python 3.11
+- **Framework:** FastAPI
+- **Testing:** pytest
+- **Contenedores:** Docker (multi-stage build)
+
+### CI/CD
+- **Plataforma:** GitHub Actions
+- **Runner:** ubuntu-latest
+- **Seguridad:** Trivy (escaneo de vulnerabilidades)
+- **Secrets:** GitHub Secrets (cifrados)
+
+### Cloud (AWS)
+- **Compute:** EC2 (t3.micro, Amazon Linux 2023)
+- **Registry:** ECR (Elastic Container Registry)
+- **IAM:** Identity and Access Management
+- **Región:** us-east-1 (Norte de Virginia)
+
+### Control de Versiones
+- **Git:** control de versiones distribuido
+- **GitHub:** hosting de repositorio y CI/CD
+
+## 📊 Métricas del Proyecto
+
+| Métrica | Valor |
+|---------|-------|
+| Tamaño de imagen Docker | 144 MB (optimizado desde 155 MB) |
+| Tiempo de CI (tests + build) | ~30 segundos |
+| Tiempo de CD (build + deploy) | ~2 minutos |
+| Vulnerabilidades bloqueadas | 14 HIGH |
+| Tests automáticos | 3 PASSED |
+| Endpoints de API | 4 |
+| Fases completadas | 10 |
+
+## 🚀 Resultado Final
+
+Pipeline CI/CD de extremo a extremo, 100% automático, con prácticas DevSecOps implementadas:
+
+✅ **Integración Continua:** tests y build en cada push  
+✅ **Entrega Continua:** deploy automático a producción  
+✅ **Seguridad:** gate de vulnerabilidades con Trivy  
+✅ **Contenerización:** Docker multi-stage optimizado  
+✅ **Cloud:** despliegue en AWS EC2 con ECR  
+✅ **Documentación:** README profesional + documentación técnica completa  
+
+**URL pública:** `http://3.239.165.153:8000` (cuando la instancia está activa)
+
+---
+
+**Próximas mejoras planeadas:**
+- Infrastructure as Code con Terraform
+- Monitoreo con Prometheus + Grafana
+- Kubernetes (EKS) para orquestación
+- HTTPS con dominio propio y certificados SSL
