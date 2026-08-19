@@ -1,0 +1,14 @@
+# =====================================================
+# ACEPTACION DE RIESGO DOCUMENTADA - proyecto de aprendizaje
+# Revisado: 2026-08-19 | Responsable: Jhon Julca
+# Motivo: CVEs en dependencias vendidas dentro de
+# setuptools/_vendor y pins transitivos de FastAPI.
+# No explotables en nuestro contexto: la API no procesa
+# archivos wheel, tars ni formularios multipart de terceros.
+# Se reevalua en cada ciclo de mejoras del pipeline.
+# =====================================================
+CVE-2026-23949
+CVE-2024-47874
+CVE-2026-48818
+CVE-2026-54283
+CVE-2026-24049

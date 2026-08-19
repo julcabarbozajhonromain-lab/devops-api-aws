@@ -5,9 +5,13 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
+# Parcheo del SO en la etapa de build
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 COPY app/requirements.txt .
 
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt \
+    && pip install --no-cache-dir --prefix=/install --upgrade pip setuptools wheel
 
 # ==========================================================
 # STAGE 2: runtime - imagen minima de produccion
@@ -15,6 +19,9 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 FROM python:3.11-slim
 
 WORKDIR /app
+
+# Parcheo del SO: elimina las 9 HIGH de util-linux/libblkid
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /install /usr/local
 
