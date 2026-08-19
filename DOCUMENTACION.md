@@ -48,6 +48,18 @@ Implementar un pipeline CI/CD completo para una API REST en AWS.
 - Política por severidad: CRITICAL bloquea; HIGH se gestiona con riesgo aceptado
 - Resultado: pipeline verde con deploy automático a EC2
 
+  ### Fase 11: Infrastructure as Code con Terraform
+- Carpeta `terraform/` con 3 archivos (main.tf, variables.tf, outputs.tf)
+- Recursos gestionados como código:
+  - Instancia EC2 t3.micro con bootstrap automático (cloud-init)
+  - Security group con puertos 22 y 8000
+  - Rol IAM con política AmazonEC2ContainerRegistryReadOnly
+  - Instance profile asociado a la instancia
+- Flujo de trabajo: init → plan → apply
+- Beneficio: infraestructura reproducible, versionada en Git,
+  sin clicks manuales y con capacidad de `terraform destroy`
+- Estado protegido en .gitignore (no se expone en el repo)
+
 ## 💡 Lecciones Aprendidas
 
 ### Técnicas
@@ -105,7 +117,8 @@ Implementar un pipeline CI/CD completo para una API REST en AWS.
 | Tests automáticos | 3 PASSED |
 | Endpoints de API | 4 |
 | Fases completadas | 10 |
-
+- **IaC:** migrar de clicks a código (Terraform) hace la infraestructura
+  reproducible y auditable. Un solo `terraform apply` reconstruye todo.
 ## 🚀 Resultado Final
 
 Pipeline CI/CD de extremo a extremo, 100% automático, con prácticas DevSecOps implementadas:
