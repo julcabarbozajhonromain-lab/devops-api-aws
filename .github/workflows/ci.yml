@@ -1,38 +1,8 @@
-name: CI - Build and Test
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    name: Build and Test
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Escaneo de dependencias con Trivy (DevSecOps)
+        uses: aquasecurity/trivy-action@master
         with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r app/requirements.txt
-      
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v
-      
-      - name: Build Docker image
-        run: |
-          docker build -t devops-api:ci-test .
-      
-      - name: Verify Docker image
-        run: |
-          docker images devops-api:ci-test
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true

@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Build, push y deploy
+    name: Build, scan, push y deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -24,9 +24,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build y push de la imagen
+      - name: Build de la imagen
         run: |
           docker build -t ${{ steps.login-ecr.outputs.registry }}/devops-api:latest .
+
+      - name: Escaneo DevSecOps con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry }}/devops-api:latest
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Push a ECR (solo si pasa el scan)
+        run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/devops-api:latest
 
       - name: Desplegar en EC2 via SSH
