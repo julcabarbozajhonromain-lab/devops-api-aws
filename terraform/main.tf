@@ -48,7 +48,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 resource "aws_security_group" "api_sg" {
   name        = "devops-api-sg"
-  description = "Permite SSH (22) y API (8000)"
+  description = "Permite SSH (22), API (8000), Prometheus (9090) y Grafana (3000)"
 
   ingress {
     description = "SSH"
@@ -66,6 +66,22 @@ resource "aws_security_group" "api_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Prometheus"
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Grafana"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -79,7 +95,7 @@ resource "aws_security_group" "api_sg" {
 resource "aws_instance" "api_server" {
   ami                         = data.aws_ami.amazon_linux_2023.id
   instance_type               = var.instance_type
-    key_name                    = "devops"
+  key_name                    = "devops"
   vpc_security_group_ids      = [aws_security_group.api_sg.id]
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
   associate_public_ip_address = true
